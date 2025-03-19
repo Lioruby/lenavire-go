@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: azerty
+      POSTGRES_DB: lenavire_dev
+      TZ: 'Europe/Paris'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lenavire-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=admin
+      - DB_PASSWORD=azerty
+      - DB_NAME=lenavire_dev
+      - DB_PORT=5432
+    networks:
+      - lenavire-network
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
+
+networks:
+  lenavire-network:
+    driver: bridge
