@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
+func Execute() {
 	databaseUrl := os.Getenv("DATABASE_URL")
 	if databaseUrl == "" {
 		fmt.Println("Error: DATABASE_URL not defined")
