@@ -8,6 +8,7 @@ import (
 	"lenavire/internal/ledger/infrastructure/api"
 	"lenavire/internal/ledger/infrastructure/api/handlers"
 	"lenavire/internal/ledger/infrastructure/database"
+	"lenavire/internal/ledger/infrastructure/database/schema"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -18,6 +19,8 @@ func main() {
 
 	fmt.Println("🔄 Connexion à la base de données...")
 	database.ConnectDB()
+
+	database.DB.AutoMigrate(&schema.PaymentModel{}, &schema.ExpenseModel{})
 
 	fmt.Println("🔄 Création de l'application...")
 	app := fiber.New()

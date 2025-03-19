@@ -7,6 +7,6 @@ import (
 )
 
 func SetupRoutes(app *fiber.App, paymentHandler *handlers.ReceivePaymentHandler, addExpenseHandler *handlers.AddExpenseHandler) {
-	app.Post("/receive-payment", paymentHandler.ReceivePayment)
-	app.Post("/add-expense", addExpenseHandler.AddExpense)
+	app.Post("/ledger/receive-payment", paymentHandler.ReceivePayment)
+	app.Post("/ledger/add-expense", addExpenseHandler.AddExpense)
 }
