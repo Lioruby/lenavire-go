@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	addExpenseCommands "lenavire/internal/ledger/application/commands/add_expense"
-	receivePaymentCommands "lenavire/internal/ledger/application/commands/receive_payment"
+	addExpenseCommand "lenavire/internal/ledger/application/commands/add_expense"
+	receivePaymentCommand "lenavire/internal/ledger/application/commands/receive_payment"
+	getLedgerQuery "lenavire/internal/ledger/application/queries"
 	"lenavire/internal/ledger/infrastructure/adapters"
 	"lenavire/internal/ledger/infrastructure/api"
 	"lenavire/internal/ledger/infrastructure/api/handlers"
@@ -17,31 +18,25 @@ import (
 func main() {
 	loadEnv()
 
-	fmt.Println("🔄 Connexion à la base de données...")
 	database.ConnectDB()
 
 	database.DB.AutoMigrate(&schema.PaymentModel{}, &schema.ExpenseModel{})
 
-	fmt.Println("🔄 Création de l'application...")
 	app := fiber.New()
 
-	fmt.Println("🔄 Création des répositories...")
 	/* Repositories */
 	paymentRepository := adapters.NewPostgrePaymentRepository(database.DB)
 	expenseRepository := adapters.NewPostgreExpenseRepository(database.DB)
 
-	fmt.Println("🔄 Création des fournisseurs...")
 	/* Providers */
 	idProvider := adapters.NewUUIDIdProvider()
 	dateProvider := adapters.NewRealDateProvider()
 
-	fmt.Println("🔄 Création des canaux...")
 	/* Channels */
 	ledgerActivityChannel := adapters.NewFakeLedgerActivityChannel()
 
-	fmt.Println("🔄 Création des handlers...")
 	/* Handlers */
-	receivePaymentCommandHandler := receivePaymentCommands.NewReceivedPaymentCommandHandler(
+	receivePaymentCommandHandler := receivePaymentCommand.NewReceivedPaymentCommandHandler(
 		paymentRepository,
 		idProvider,
 		dateProvider,
@@ -50,7 +45,7 @@ func main() {
 	)
 	receivePaymentHandler := handlers.NewReceivePaymentHandler(receivePaymentCommandHandler)
 
-	addExpenseCommandHandler := addExpenseCommands.NewAddExpenseCommandHandler(
+	addExpenseCommandHandler := addExpenseCommand.NewAddExpenseCommandHandler(
 		expenseRepository,
 		idProvider,
 		dateProvider,
@@ -58,11 +53,17 @@ func main() {
 	)
 	addExpenseHandler := handlers.NewAddExpenseHandler(addExpenseCommandHandler)
 
-	fmt.Println("🔄 Création des routes...")
-	/* Routes */
-	api.SetupRoutes(app, receivePaymentHandler, addExpenseHandler)
+	getLedgerQueryHandler := getLedgerQuery.NewGetLedgerQueryHandler(database.DB)
+	getLedgerHandler := handlers.NewGetLedgerHandler(getLedgerQueryHandler)
 
-	fmt.Println("🔄 Démarrage du serveur...")
+	/* Routes */
+	api.SetupRoutes(
+		app,
+		receivePaymentHandler,
+		addExpenseHandler,
+		getLedgerHandler,
+	)
+
 	/* Start server */
 	app.Listen(":3000")
 }

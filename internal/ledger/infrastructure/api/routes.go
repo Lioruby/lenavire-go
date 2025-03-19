@@ -6,7 +6,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(app *fiber.App, paymentHandler *handlers.ReceivePaymentHandler, addExpenseHandler *handlers.AddExpenseHandler) {
+func SetupRoutes(
+	app *fiber.App,
+	paymentHandler *handlers.ReceivePaymentHandler,
+	addExpenseHandler *handlers.AddExpenseHandler,
+	getLedgerHandler *handlers.GetLedgerHandler,
+) {
 	app.Post("/ledger/receive-payment", paymentHandler.ReceivePayment)
 	app.Post("/ledger/add-expense", addExpenseHandler.AddExpense)
+	app.Get("/ledger", getLedgerHandler.GetLedger)
 }
