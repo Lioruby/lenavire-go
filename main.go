@@ -12,6 +12,8 @@ import (
 	"lenavire/internal/ledger/infrastructure/database/schema"
 	websocket "lenavire/internal/ledger/infrastructure/websocket"
 
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
@@ -79,11 +81,15 @@ func main() {
 	)
 
 	/* Start server */
-	app.Listen(":3000")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+	app.Listen(":" + port)
 }
 
 func loadEnv() {
 	if err := godotenv.Load(); err != nil {
-		fmt.Println("Erreur lors du chargement du fichier .env :", err)
+		fmt.Println("Error loading .env file:", err)
 	}
 }
