@@ -34,7 +34,7 @@ func (h *ReceivePaymentHandler) ReceivePayment(c *fiber.Ctx) error {
 	}
 
 	command := commands.NewReceivePaymentCommand(
-		req.Data.Object.AmountTotal,
+		req.Data.Object.AmountTotal/100,
 		req.Data.Object.CustomerDetails.Name,
 		req.Data.Object.CustomerDetails.Email,
 		paymentType,
