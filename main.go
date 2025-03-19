@@ -10,6 +10,7 @@ import (
 	"lenavire/internal/ledger/infrastructure/api/handlers"
 	"lenavire/internal/ledger/infrastructure/database"
 	"lenavire/internal/ledger/infrastructure/database/schema"
+	websocket "lenavire/internal/ledger/infrastructure/websocket"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -20,9 +21,21 @@ func main() {
 
 	database.ConnectDB()
 
+	hub := websocket.NewLedgerActivityHub()
+	go hub.Run()
+
 	database.DB.AutoMigrate(&schema.PaymentModel{}, &schema.ExpenseModel{})
 
 	app := fiber.New()
+
+	app.Use(func(c *fiber.Ctx) error {
+		c.Set("Access-Control-Allow-Origin", "*")
+		c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Set("Access-Control-Allow-Credentials", "true")
+
+		return c.Next()
+	})
 
 	/* Repositories */
 	paymentRepository := adapters.NewPostgrePaymentRepository(database.DB)
@@ -33,7 +46,7 @@ func main() {
 	dateProvider := adapters.NewRealDateProvider()
 
 	/* Channels */
-	ledgerActivityChannel := adapters.NewFakeLedgerActivityChannel()
+	ledgerActivityChannel := adapters.NewWebSocketLedgerActivityChannel(hub)
 
 	/* Handlers */
 	receivePaymentCommandHandler := receivePaymentCommand.NewReceivedPaymentCommandHandler(
@@ -62,6 +75,7 @@ func main() {
 		receivePaymentHandler,
 		addExpenseHandler,
 		getLedgerHandler,
+		hub,
 	)
 
 	/* Start server */
