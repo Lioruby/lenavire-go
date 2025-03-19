@@ -47,6 +47,48 @@ func Execute() {
 
 func handleCommand(db *gorm.DB, command string) {
 	switch command {
+	case "sql":
+		fmt.Println("Entrez votre requête SQL (terminez par ;) :")
+		scanner := bufio.NewScanner(os.Stdin)
+		var query string
+		for scanner.Scan() {
+			line := scanner.Text()
+			if line == "" {
+				continue
+			}
+			query += " " + line
+			if strings.HasSuffix(line, ";") {
+				break
+			}
+		}
+
+		var result []map[string]interface{}
+		if err := db.Raw(query).Scan(&result).Error; err != nil {
+			fmt.Printf("Erreur: %v\n", err)
+			return
+		}
+
+		// Afficher les résultats
+		if len(result) > 0 {
+			// Afficher les en-têtes
+			headers := make([]string, 0)
+			for k := range result[0] {
+				headers = append(headers, k)
+			}
+			fmt.Println(strings.Join(headers, "\t"))
+			fmt.Println(strings.Repeat("-", 80))
+
+			// Afficher les données
+			for _, row := range result {
+				values := make([]string, 0)
+				for _, h := range headers {
+					values = append(values, fmt.Sprintf("%v", row[h]))
+				}
+				fmt.Println(strings.Join(values, "\t"))
+			}
+		}
+		fmt.Printf("\n%d lignes retournées\n", len(result))
+
 	case "help":
 		fmt.Println("Available commands:")
 		fmt.Println("  payments     - Show the latest payments")
