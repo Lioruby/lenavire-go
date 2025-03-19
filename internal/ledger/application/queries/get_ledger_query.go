@@ -28,7 +28,7 @@ type Payment struct {
 	Amount      int    `json:"amount"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
-	PaymentType string `json:"paymentType"`
+	PaymentType string `json:"payment_type"`
 }
 
 type TopContributor struct {
@@ -61,6 +61,7 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 								'email', email,
 								'payment_type', payment_type
 							)
+							ORDER BY date DESC
 						)
 						FROM (
 							SELECT *
