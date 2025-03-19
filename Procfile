@@ -1,1 +1,1 @@
-web: bin/lenavire
+web: go run main.go
