@@ -63,12 +63,12 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 								'email', email,
 								'payment_type', payment_type
 							)
-							ORDER BY created_at DESC
+							ORDER BY created_at ASC
 						)
 						FROM (
 							SELECT *
 							FROM payments
-							ORDER BY created_at DESC
+							ORDER BY created_at ASC
 							LIMIT 3
 						) recent
 					),
