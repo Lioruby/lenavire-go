@@ -63,7 +63,6 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 								'email', email,
 								'payment_type', payment_type
 							)
-							ORDER BY date DESC
 						)
 						FROM (
 							SELECT *
