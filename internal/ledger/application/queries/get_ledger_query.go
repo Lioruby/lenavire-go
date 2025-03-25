@@ -94,9 +94,7 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 						) top
 					),
 					'[]'::json
-				) as all_time_top_contributors
-			FROM payments
-		),
+				) as all_time_top_contributors,
 				COALESCE(
 					(
 						SELECT json_agg(
@@ -121,6 +119,7 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 				) as monthly_top_contributors
 			FROM payments
 		),
+
 		expense_stats AS (
 			SELECT COALESCE(SUM(amount), 0) as total_expenses
 			FROM expenses
