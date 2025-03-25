@@ -1,2 +1,4 @@
 .env
 go.sum
+internal/ledger/infrastructure/database/expenses.json
+internal/ledger/infrastructure/database/payments.json
