@@ -25,6 +25,9 @@ RUN apk --no-cache add tzdata
 COPY --from=builder /build/main /main
 COPY .env /.env
 
+COPY internal/ledger/infrastructure/database/payments.json /app/internal/ledger/infrastructure/database/
+COPY internal/ledger/infrastructure/database/expenses.json /app/internal/ledger/infrastructure/database/
+
 # Expose port 3000
 EXPOSE 3000
 

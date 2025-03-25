@@ -68,9 +68,7 @@ func handleCommand(db *gorm.DB, command string) {
 			return
 		}
 
-		// Afficher les résultats
 		if len(result) > 0 {
-			// Afficher les en-têtes
 			headers := make([]string, 0)
 			for k := range result[0] {
 				headers = append(headers, k)
@@ -78,7 +76,6 @@ func handleCommand(db *gorm.DB, command string) {
 			fmt.Println(strings.Join(headers, "\t"))
 			fmt.Println(strings.Repeat("-", 80))
 
-			// Afficher les données
 			for _, row := range result {
 				values := make([]string, 0)
 				for _, h := range headers {
