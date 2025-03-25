@@ -17,11 +17,12 @@ type GetLedgerQueryHandler struct {
 }
 
 type GetLedgerQueryResult struct {
-	TotalRevenue    int              `json:"totalRevenue"`
-	TotalExpenses   int              `json:"totalExpenses"`
-	TotalReceived   int              `json:"totalReceived"`
-	Payments        []Payment        `json:"payments"`
-	TopContributors []TopContributor `json:"topContributors"`
+	TotalRevenue           int              `json:"totalRevenue"`
+	TotalExpenses          int              `json:"totalExpenses"`
+	TotalReceived          int              `json:"totalReceived"`
+	Payments               []Payment        `json:"payments"`
+	AllTimeTopContributors []TopContributor `json:"allTimeTopContributors"`
+	MonthlyTopContributors []TopContributor `json:"monthlyTopContributors"`
 }
 
 type Payment struct {
@@ -42,10 +43,11 @@ func NewGetLedgerQueryHandler(db *gorm.DB) *GetLedgerQueryHandler {
 
 func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryResult, error) {
 	var result struct {
-		TotalExpenses   int             `json:"total_expenses"`
-		TotalReceived   int             `json:"total_received"`
-		Payments        json.RawMessage `json:"payments"`
-		TopContributors json.RawMessage `json:"top_contributors"`
+		TotalExpenses          int             `json:"total_expenses"`
+		TotalReceived          int             `json:"total_received"`
+		Payments               json.RawMessage `json:"payments"`
+		AllTimeTopContributors json.RawMessage `json:"all_time_top_contributors"`
+		MonthlyTopContributors json.RawMessage `json:"monthly_top_contributors"`
 	}
 
 	sqlQuery := `
@@ -86,14 +88,37 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 								SUM(amount) as total_amount,
 								MAX(name) as name
 							FROM payments
-							WHERE date_trunc('month', date) = date_trunc('month', CURRENT_DATE)
 							GROUP BY email
 							ORDER BY total_amount DESC
-							LIMIT 20
+							LIMIT 10
 						) top
 					),
 					'[]'::json
-				) as top_contributors
+				) as all_time_top_contributors
+			FROM payments
+		),
+				COALESCE(
+					(
+						SELECT json_agg(
+							json_build_object(
+								'amount', total_amount,
+								'name', name
+							)
+						)
+						FROM (
+							SELECT 
+								email,
+								SUM(amount) as total_amount,
+								MAX(name) as name
+							FROM payments
+							WHERE date_trunc('month', date) = date_trunc('month', CURRENT_DATE)
+							GROUP BY email
+							ORDER BY total_amount DESC
+							LIMIT 10
+						) top
+					),
+					'[]'::json
+				) as monthly_top_contributors
 			FROM payments
 		),
 		expense_stats AS (
@@ -114,7 +139,8 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 	}
 
 	var payments []Payment
-	var topContributors []TopContributor
+	var allTimeTopContributors []TopContributor
+	var monthlyTopContributors []TopContributor
 
 	if len(result.Payments) == 0 {
 		payments = []Payment{}
@@ -124,10 +150,18 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 		}
 	}
 
-	if len(result.TopContributors) == 0 {
-		topContributors = []TopContributor{}
+	if len(result.AllTimeTopContributors) == 0 {
+		allTimeTopContributors = []TopContributor{}
 	} else {
-		if err := json.Unmarshal(result.TopContributors, &topContributors); err != nil {
+		if err := json.Unmarshal(result.AllTimeTopContributors, &allTimeTopContributors); err != nil {
+			return nil, err
+		}
+	}
+
+	if len(result.MonthlyTopContributors) == 0 {
+		monthlyTopContributors = []TopContributor{}
+	} else {
+		if err := json.Unmarshal(result.MonthlyTopContributors, &monthlyTopContributors); err != nil {
 			return nil, err
 		}
 	}
@@ -138,10 +172,11 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 	}
 
 	return &GetLedgerQueryResult{
-		TotalRevenue:    result.TotalReceived - result.TotalExpenses,
-		TotalExpenses:   result.TotalExpenses,
-		TotalReceived:   result.TotalReceived,
-		Payments:        reversePayments,
-		TopContributors: topContributors,
+		TotalRevenue:           result.TotalReceived - result.TotalExpenses,
+		TotalExpenses:          result.TotalExpenses,
+		TotalReceived:          result.TotalReceived,
+		Payments:               reversePayments,
+		AllTimeTopContributors: allTimeTopContributors,
+		MonthlyTopContributors: monthlyTopContributors,
 	}, nil
 }
