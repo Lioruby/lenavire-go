@@ -132,11 +132,16 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 		}
 	}
 
+	reversePayments := make([]Payment, len(payments))
+	for i, payment := range payments {
+		reversePayments[len(payments)-1-i] = payment
+	}
+
 	return &GetLedgerQueryResult{
 		TotalRevenue:    result.TotalReceived - result.TotalExpenses,
 		TotalExpenses:   result.TotalExpenses,
 		TotalReceived:   result.TotalReceived,
-		Payments:        payments,
+		Payments:        reversePayments,
 		TopContributors: topContributors,
 	}, nil
 }
