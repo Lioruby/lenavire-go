@@ -59,7 +59,7 @@ type RawExpense struct {
 }
 
 func SyncLastDB(db *gorm.DB) {
-	rawPaymentsData, err := os.ReadFile("app/internal/ledger/infrastructure/database/payments.json")
+	rawPaymentsData, err := os.ReadFile("internal/ledger/infrastructure/database/payments.json")
 	if err != nil {
 		fmt.Println("❌ Erreur lecture fichier payments.json:", err)
 		return
@@ -85,7 +85,7 @@ func SyncLastDB(db *gorm.DB) {
 		})
 	}
 
-	rawExpensesData, err := os.ReadFile("app/internal/ledger/infrastructure/database/expenses.json")
+	rawExpensesData, err := os.ReadFile("internal/ledger/infrastructure/database/expenses.json")
 	if err != nil {
 		fmt.Println("❌ Erreur lecture fichier expenses.json:", err)
 		return
