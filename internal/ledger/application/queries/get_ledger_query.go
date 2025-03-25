@@ -128,7 +128,8 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 			e.total_expenses,
 			p.total_received,
 			p.payments,
-			p.top_contributors
+			p.all_time_top_contributors,
+			p.monthly_top_contributors
 		FROM payment_stats p
 		CROSS JOIN expense_stats e`
 
