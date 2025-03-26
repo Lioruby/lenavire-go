@@ -59,7 +59,7 @@ func (h *ReceivedPaymentCommandHandler) Execute(command ReceivePaymentCommand) e
 		amount,
 		command.name,
 		command.email,
-		h.dateProvider.Now().Format("2006-01-02"),
+		h.dateProvider.Now().Format("2006-01-02 15:04:05"),
 		command.paymentType,
 	)
 
@@ -95,7 +95,7 @@ func (h *ReceivedPaymentCommandHandler) createTVAExpense(amount int) error {
 	expense := entities.NewExpense(
 		h.idProvider.Generate(),
 		tvaAmount,
-		h.dateProvider.Now().Format("2006-01-02"),
+		h.dateProvider.Now().Format("2006-01-02 15:04:05"),
 	)
 
 	err = h.expenseRepository.Create(expense)

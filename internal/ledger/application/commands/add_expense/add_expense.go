@@ -48,7 +48,7 @@ func (h *AddExpenseCommandHandler) Execute(addExpenseCommand AddExpenseCommand) 
 
 	expense := &entities.Expense{
 		Amount: amount,
-		Date:   h.dateProvider.Now().Format("2006-01-02"),
+		Date:   h.dateProvider.Now().Format("2006-01-02 15:04:05"),
 		Id:     h.idProvider.Generate(),
 	}
 

@@ -25,7 +25,7 @@ var _ = Describe("AddExpenseCommandHandler", func() {
 	BeforeEach(func() {
 		expenseRepository = *adapters.NewInMemoryExpenseRepository()
 		idProvider = adapters.NewStubIdProvider("xxxx")
-		dateProvider = adapters.NewStubDateProvider("2006-01-05")
+		dateProvider = adapters.NewStubDateProvider("2006-01-05 00:00:00")
 		ledgerActivityChannel = *adapters.NewFakeLedgerActivityChannel()
 
 		command = NewAddExpenseCommand(100)
@@ -49,7 +49,7 @@ var _ = Describe("AddExpenseCommandHandler", func() {
 		It("should mark the date as now", func() {
 			handler.Execute(command)
 
-			Expect(expenseRepository.Expenses[0].Date).To(Equal("2006-01-05"))
+			Expect(expenseRepository.Expenses[0].Date).To(Equal("2006-01-05 00:00:00"))
 		})
 
 		It("should send a notification to the ledger activity channel", func() {

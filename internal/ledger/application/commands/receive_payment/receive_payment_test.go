@@ -28,7 +28,7 @@ var _ = Describe("ReceivePaymentCommandHandler", func() {
 		paymentRepository = adapters.NewInMemoryPaymentRepository()
 		expenseRepository = adapters.NewInMemoryExpenseRepository()
 		idProvider = adapters.NewStubIdProvider("xxxxx")
-		dateProvider = adapters.NewStubDateProvider("2021-01-04")
+		dateProvider = adapters.NewStubDateProvider("2021-01-04 00:00:00")
 		command = NewReceivePaymentCommand(100, "John Doe", "john.doe@example.com", valuesobjects.OneTime)
 		ledgerActivityChannel = adapters.NewFakeLedgerActivityChannel()
 		handler = NewReceivedPaymentCommandHandler(paymentRepository, idProvider, dateProvider, expenseRepository, ledgerActivityChannel)
@@ -59,14 +59,14 @@ var _ = Describe("ReceivePaymentCommandHandler", func() {
 
 		It("should mark the payment date as now", func() {
 			handler.Execute(command)
-			Expect(paymentRepository.Payments[0].Date).To(Equal("2021-01-04"))
+			Expect(paymentRepository.Payments[0].Date).To(Equal("2021-01-04 00:00:00"))
 		})
 
 		It("should generate an expense of 20% for the TVA taxes", func() {
 			handler.Execute(command)
 			Expect(expenseRepository.Expenses).To(HaveLen(1))
 			Expect(expenseRepository.Expenses[0].Amount.Value).To(Equal(20))
-			Expect(expenseRepository.Expenses[0].Date).To(Equal("2021-01-04"))
+			Expect(expenseRepository.Expenses[0].Date).To(Equal("2021-01-04 00:00:00"))
 			Expect(expenseRepository.Expenses[0].Id).To(Equal("xxxxx"))
 		})
 

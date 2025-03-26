@@ -13,6 +13,6 @@ func NewStubDateProvider(date string) *StubDateProvider {
 }
 
 func (p *StubDateProvider) Now() time.Time {
-	date, _ := time.Parse("2006-01-02", p.Date)
+	date, _ := time.Parse("2006-01-02 15:04:05", p.Date)
 	return date
 }
