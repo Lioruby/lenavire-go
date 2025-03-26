@@ -4,7 +4,7 @@ import (
 	"fmt"
 	addExpenseCommand "lenavire/internal/ledger/application/commands/add_expense"
 	receivePaymentCommand "lenavire/internal/ledger/application/commands/receive_payment"
-	getLedgerQuery "lenavire/internal/ledger/application/queries"
+	queries "lenavire/internal/ledger/application/queries"
 	"lenavire/internal/ledger/infrastructure/adapters"
 	"lenavire/internal/ledger/infrastructure/api"
 	"lenavire/internal/ledger/infrastructure/api/handlers"
@@ -68,8 +68,17 @@ func main() {
 	)
 	addExpenseHandler := handlers.NewAddExpenseHandler(addExpenseCommandHandler)
 
-	getLedgerQueryHandler := getLedgerQuery.NewGetLedgerQueryHandler(database.DB)
+	getLedgerQueryHandler := queries.NewGetLedgerQueryHandler(database.DB)
 	getLedgerHandler := handlers.NewGetLedgerHandler(getLedgerQueryHandler)
+
+	getContributorsRankQueryHandler := queries.NewGetContributorsRankQueryHandler(database.DB)
+	getContributorsRankHandler := handlers.NewGetContributorsRankHandler(getContributorsRankQueryHandler)
+
+	getExpensesHistoryQueryHandler := queries.NewGetExpensesHistoryQueryHandler(database.DB)
+	getExpensesHistoryHandler := handlers.NewGetExpensesHistoryHandler(getExpensesHistoryQueryHandler)
+
+	getPaymentsHistoryQueryHandler := queries.NewGetPaymentsHistoryQueryHandler(database.DB)
+	getPaymentsHistoryHandler := handlers.NewGetPaymentsHistoryHandler(getPaymentsHistoryQueryHandler)
 
 	/* Routes */
 	api.SetupRoutes(
@@ -77,6 +86,9 @@ func main() {
 		receivePaymentHandler,
 		addExpenseHandler,
 		getLedgerHandler,
+		getContributorsRankHandler,
+		getExpensesHistoryHandler,
+		getPaymentsHistoryHandler,
 		hub,
 	)
 
