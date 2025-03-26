@@ -13,6 +13,8 @@ type PaymentResponse struct {
 	Amount      int    `json:"amount"`
 	Date        string `json:"date"`
 	PaymentType string `json:"payment_type"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
 }
 
 func NewGetPaymentsHistoryQuery() GetPaymentsHistoryQuery {
