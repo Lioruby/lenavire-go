@@ -1,6 +1,7 @@
 package mappers
 
 import (
+	"fmt"
 	"lenavire/internal/ledger/domain/entities"
 	"lenavire/internal/ledger/domain/valuesobjects"
 	"lenavire/internal/ledger/infrastructure/database/schema"
@@ -32,14 +33,15 @@ func (m *PaymentMapper) ToDomain(payment *schema.PaymentModel) *entities.Payment
 		amount,
 		payment.Name,
 		payment.Email,
-		payment.Date.Format("2006-01-02"),
+		payment.Date.Format("2006-01-02 15:04:05"),
 		paymentType,
 	)
 }
 
 func (m *PaymentMapper) ToPersistence(payment *entities.Payment) *schema.PaymentModel {
-	date, err := time.Parse("2006-01-02", payment.Date)
+	date, err := time.Parse("2006-01-02 15:04:05", payment.Date)
 	if err != nil {
+		fmt.Println(err)
 		log.Fatal(err)
 	}
 
