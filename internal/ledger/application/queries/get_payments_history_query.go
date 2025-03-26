@@ -42,7 +42,6 @@ func (h *GetPaymentsHistoryQueryHandler) Execute(query GetPaymentsHistoryQuery) 
 		) as payments
 		FROM payments
 		ORDER BY date DESC
-		LIMIT 100
 	`
 
 	err := h.db.Raw(sqlQuery).Scan(&result).Error

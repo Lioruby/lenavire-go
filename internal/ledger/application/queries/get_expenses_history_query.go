@@ -45,7 +45,6 @@ func (h *GetExpensesHistoryQueryHandler) Execute(query GetExpensesHistoryQuery) 
 		) as expenses
 		FROM expenses
 		ORDER BY date DESC
-		LIMIT 100
 	`
 
 	err := h.db.Raw(sqlQuery).Scan(&result).Error

@@ -50,7 +50,6 @@ func (h *GetContributorsRankQueryHandler) Execute(query GetContributorsRankQuery
 			FROM payments
 			GROUP BY email
 			ORDER BY total_amount DESC
-			LIMIT 100
 		) ranked_contributors
 	`
 
