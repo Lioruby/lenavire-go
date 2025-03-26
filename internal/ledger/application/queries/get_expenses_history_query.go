@@ -46,7 +46,7 @@ func (h *GetExpensesHistoryQueryHandler) Execute(query GetExpensesHistoryQuery) 
 		FROM (
 			SELECT id, amount, date
 			FROM expenses
-			ORDER BY date ASC
+			ORDER BY date DESC
 		) e
 	`
 

@@ -52,7 +52,7 @@ func (h *GetPaymentsHistoryQueryHandler) Execute(query GetPaymentsHistoryQuery) 
 		FROM (
 			SELECT id, amount, date, payment_type, name, email
 			FROM payments
-			ORDER BY date ASC
+			ORDER BY date DESC
 		) p
 	`
 
