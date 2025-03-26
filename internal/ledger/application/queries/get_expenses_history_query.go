@@ -38,13 +38,16 @@ func (h *GetExpensesHistoryQueryHandler) Execute(query GetExpensesHistoryQuery) 
 	sqlQuery := `
 		SELECT json_agg(
 			json_build_object(
-				'id', id,
-				'amount', amount,
-				'date', date
+				'id', e.id,
+				'amount', e.amount,
+				'date', e.date
 			)
 		) as expenses
-		FROM expenses
-		ORDER BY date DESC
+		FROM (
+			SELECT id, amount, date
+			FROM expenses
+			ORDER BY date DESC
+		) e
 	`
 
 	err := h.db.Raw(sqlQuery).Scan(&result).Error

@@ -32,16 +32,19 @@ func (h *GetPaymentsHistoryQueryHandler) Execute(query GetPaymentsHistoryQuery) 
 	sqlQuery := `
 		SELECT json_agg(
 			json_build_object(
-				'id', id,
-				'amount', amount,
-				'date', date,
-				'payment_type', payment_type,
-				'name', name,
-				'email', email
+				'id', p.id,
+				'amount', p.amount,
+				'date', p.date,
+				'payment_type', p.payment_type,
+				'name', p.name,
+				'email', p.email
 			)
 		) as payments
-		FROM payments
-		ORDER BY date DESC
+		FROM (
+			SELECT id, amount, date, payment_type, name, email
+			FROM payments
+			ORDER BY date DESC
+		) p
 	`
 
 	err := h.db.Raw(sqlQuery).Scan(&result).Error
