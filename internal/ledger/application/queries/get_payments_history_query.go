@@ -8,6 +8,13 @@ import (
 
 type GetPaymentsHistoryQuery struct{}
 
+type PaymentResponse struct {
+	ID          string `json:"id"`
+	Amount      int    `json:"amount"`
+	Date        string `json:"date"`
+	PaymentType string `json:"payment_type"`
+}
+
 func NewGetPaymentsHistoryQuery() GetPaymentsHistoryQuery {
 	return GetPaymentsHistoryQuery{}
 }
@@ -17,7 +24,7 @@ type GetPaymentsHistoryQueryHandler struct {
 }
 
 type GetPaymentsHistoryQueryResult struct {
-	Payments []Payment `json:"payments"`
+	Payments []PaymentResponse `json:"payments"`
 }
 
 func NewGetPaymentsHistoryQueryHandler(db *gorm.DB) *GetPaymentsHistoryQueryHandler {
@@ -52,7 +59,7 @@ func (h *GetPaymentsHistoryQueryHandler) Execute(query GetPaymentsHistoryQuery) 
 		return nil, err
 	}
 
-	var payments []Payment
+	var payments []PaymentResponse
 	if err := json.Unmarshal(result.Payments, &payments); err != nil {
 		return nil, err
 	}
