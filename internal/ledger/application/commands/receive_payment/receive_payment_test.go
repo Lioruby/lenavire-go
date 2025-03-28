@@ -63,9 +63,13 @@ var _ = Describe("ReceivePaymentCommandHandler", func() {
 		})
 
 		It("should generate an expense of 20% for the TVA taxes", func() {
+			// When the payment is received, the amount is 100 TTC
+			// TVA is included in the amount
+			// The expense is Amount - Amount * 20%
+
 			handler.Execute(command)
 			Expect(expenseRepository.Expenses).To(HaveLen(1))
-			Expect(expenseRepository.Expenses[0].Amount.Value).To(Equal(20))
+			Expect(expenseRepository.Expenses[0].Amount.Value).To(Equal(16))
 			Expect(expenseRepository.Expenses[0].Date).To(Equal("2021-01-04 00:00:00"))
 			Expect(expenseRepository.Expenses[0].Id).To(Equal("xxxxx"))
 		})

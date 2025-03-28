@@ -86,7 +86,9 @@ func (h *ReceivedPaymentCommandHandler) Execute(command ReceivePaymentCommand) e
 
 func (h *ReceivedPaymentCommandHandler) createTVAExpense(amount int) error {
 	tvaValue := (amount * 20) / 100
-	tvaAmount, err := valuesobjects.NewAmount(tvaValue)
+	realAmount := amount - tvaValue
+	realTvaValue := realAmount * 20 / 100
+	tvaAmount, err := valuesobjects.NewAmount(realTvaValue)
 
 	if err != nil {
 		return err
