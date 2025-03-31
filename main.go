@@ -80,6 +80,8 @@ func main() {
 	getPaymentsHistoryQueryHandler := queries.NewGetPaymentsHistoryQueryHandler(database.DB)
 	getPaymentsHistoryHandler := handlers.NewGetPaymentsHistoryHandler(getPaymentsHistoryQueryHandler)
 
+	addPaymentHandler := handlers.NewAddPaymentHandler(receivePaymentCommandHandler)
+
 	/* Routes */
 	api.SetupRoutes(
 		app,
@@ -89,6 +91,7 @@ func main() {
 		getContributorsRankHandler,
 		getExpensesHistoryHandler,
 		getPaymentsHistoryHandler,
+		addPaymentHandler,
 		hub,
 	)
 

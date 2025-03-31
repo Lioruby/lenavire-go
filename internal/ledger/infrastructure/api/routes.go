@@ -16,6 +16,7 @@ func SetupRoutes(
 	getContributorsRankHandler *handlers.GetContributorsRankHandler,
 	getExpensesHistoryHandler *handlers.GetExpensesHistoryHandler,
 	getPaymentsHistoryHandler *handlers.GetPaymentsHistoryHandler,
+	addPaymentHandler *handlers.AddPaymentHandler,
 	hub *ws.LedgerActivityHub,
 ) {
 
@@ -29,4 +30,5 @@ func SetupRoutes(
 	app.Get("/ledger/contributors-rank", getContributorsRankHandler.GetContributorsRank)
 	app.Get("/ledger/expenses-history", getExpensesHistoryHandler.GetExpensesHistory)
 	app.Get("/ledger/payments-history", getPaymentsHistoryHandler.GetPaymentsHistory)
+	app.Post("/ledger/add-payment", addPaymentHandler.AddPayment)
 }
