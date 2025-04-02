@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"lenavire/internal/ledger/application/commands/receive_payment"
+	commands "lenavire/internal/ledger/application/commands/receive_payment"
 	"lenavire/internal/ledger/domain/valuesobjects"
 	"lenavire/internal/ledger/infrastructure/api/dto"
 
@@ -35,7 +35,7 @@ func (h *ReceivePaymentHandler) ReceivePayment(c *fiber.Ctx) error {
 
 	command := commands.NewReceivePaymentCommand(
 		req.Data.Object.AmountTotal/100,
-		req.Data.Object.CustomerDetails.Name,
+		req.Data.Object.CustomFields[0].Text.Value,
 		req.Data.Object.CustomerDetails.Email,
 		paymentType,
 	)
