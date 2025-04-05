@@ -68,7 +68,7 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 							SELECT *
 							FROM payments
 							ORDER BY date DESC
-							LIMIT 3
+							LIMIT 5
 						) recent
 					),
 					'[]'::json
@@ -111,7 +111,7 @@ func (h *GetLedgerQueryHandler) Execute(query GetLedgerQuery) (*GetLedgerQueryRe
 							WHERE date_trunc('month', date) = date_trunc('month', CURRENT_DATE)
 							GROUP BY email
 							ORDER BY total_amount DESC
-							LIMIT 10
+							LIMIT 20
 						) top
 					),
 					'[]'::json
