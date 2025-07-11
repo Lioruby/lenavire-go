@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	addExpenseCommand "lenavire/internal/ledger/application/commands/add_expense"
+	commands "lenavire/internal/ledger/application/commands/create_checkout"
 	receivePaymentCommand "lenavire/internal/ledger/application/commands/receive_payment"
 	queries "lenavire/internal/ledger/application/queries"
 	"lenavire/internal/ledger/infrastructure/adapters"
@@ -36,6 +37,11 @@ func main() {
 		c.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Set("Access-Control-Allow-Credentials", "true")
 
+		// Handle preflight requests
+		if c.Method() == "OPTIONS" {
+			return c.SendStatus(200)
+		}
+
 		return c.Next()
 	})
 
@@ -66,6 +72,8 @@ func main() {
 		dateProvider,
 		ledgerActivityChannel,
 	)
+
+	paymentGateway := adapters.NewStripePaymentGateway(os.Getenv("STRIPE_SECRET_KEY"))
 	addExpenseHandler := handlers.NewAddExpenseHandler(addExpenseCommandHandler)
 
 	getLedgerQueryHandler := queries.NewGetLedgerQueryHandler(database.DB)
@@ -82,6 +90,9 @@ func main() {
 
 	addPaymentHandler := handlers.NewAddPaymentHandler(receivePaymentCommandHandler)
 
+	createCheckoutCommandHandler := commands.NewCreateCheckoutCommandHandler(paymentGateway)
+	createCheckoutHandler := handlers.NewCreateCheckoutHandler(createCheckoutCommandHandler)
+
 	/* Routes */
 	api.SetupRoutes(
 		app,
@@ -92,6 +103,7 @@ func main() {
 		getExpensesHistoryHandler,
 		getPaymentsHistoryHandler,
 		addPaymentHandler,
+		createCheckoutHandler,
 		hub,
 	)
 

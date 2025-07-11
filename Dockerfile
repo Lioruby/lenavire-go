@@ -1,7 +1,10 @@
 # Build stage
 FROM golang:1.24.1-alpine AS builder
 
-WORKDIR /build
+WORKDIR /app
+
+# Install air
+RUN go install github.com/air-verse/air@latest
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -12,24 +15,30 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o main .
-
 # Final stage
-FROM alpine:latest
+FROM golang:1.24.1-alpine
 
-# Install necessary runtime dependencies
-RUN apk --no-cache add tzdata
+WORKDIR /app
 
-# Copy the binary and env file from builder
-COPY --from=builder /build/main /main
-COPY .env /.env
+# Install necessary build tools
+RUN apk add --no-cache make git gcc musl-dev
+
+# Copy air binary from builder
+COPY --from=builder /go/bin/air /go/bin/air
+
+# Copy the source code and dependencies
+COPY --from=builder /go/pkg /go/pkg
+COPY --from=builder /app .
 
 COPY internal/ledger/infrastructure/database/payments.json /app/internal/ledger/infrastructure/database/
 COPY internal/ledger/infrastructure/database/expenses.json /app/internal/ledger/infrastructure/database/
 
+# Copy .env file
+COPY .env /.env
+
 # Expose port 3000
 EXPOSE 3000
 
-# Run the application
-CMD ["/main"]
+# Run the application with the correct main path
+CMD ["air", "-c", ".air.toml"]
+

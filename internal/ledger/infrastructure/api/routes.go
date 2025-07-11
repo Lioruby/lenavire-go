@@ -17,6 +17,7 @@ func SetupRoutes(
 	getExpensesHistoryHandler *handlers.GetExpensesHistoryHandler,
 	getPaymentsHistoryHandler *handlers.GetPaymentsHistoryHandler,
 	addPaymentHandler *handlers.AddPaymentHandler,
+	createCheckoutHandler *handlers.CreateCheckoutHandler,
 	hub *ws.LedgerActivityHub,
 ) {
 
@@ -31,4 +32,5 @@ func SetupRoutes(
 	app.Get("/ledger/expenses-history", getExpensesHistoryHandler.GetExpensesHistory)
 	app.Get("/ledger/payments-history", getPaymentsHistoryHandler.GetPaymentsHistory)
 	app.Post("/ledger/add-payment", addPaymentHandler.AddPayment)
+	app.Post("/ledger/checkout/create", createCheckoutHandler.Handle)
 }
