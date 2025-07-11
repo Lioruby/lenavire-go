@@ -41,10 +41,9 @@ func (s *StripePaymentGateway) CreateCheckoutSession(amount int, subscriptionTyp
 				Quantity: stripe.Int64(1),
 			},
 		},
-		Mode:             stripe.String(s.getModeFromSubscriptionType(subscriptionType)),
-		SuccessURL:       stripe.String(baseFrontendURL + "?payment=success"),
-		CancelURL:        stripe.String(baseFrontendURL + "?payment=failed"),
-		CustomerCreation: stripe.String("always"),
+		Mode:       stripe.String(s.getModeFromSubscriptionType(subscriptionType)),
+		SuccessURL: stripe.String(baseFrontendURL + "?payment=success"),
+		CancelURL:  stripe.String(baseFrontendURL + "?payment=failed"),
 	}
 
 	if subscriptionType == entities.Subscription {
