@@ -44,6 +44,17 @@ func (s *StripePaymentGateway) CreateCheckoutSession(amount int, subscriptionTyp
 		Mode:       stripe.String(s.getModeFromSubscriptionType(subscriptionType)),
 		SuccessURL: stripe.String(baseFrontendURL + "?payment=success"),
 		CancelURL:  stripe.String(baseFrontendURL + "?payment=failed"),
+		CustomFields: []*stripe.CheckoutSessionCustomFieldParams{
+			{
+				Key: stripe.String("pseudo"),
+				Label: &stripe.CheckoutSessionCustomFieldLabelParams{
+					Type:   stripe.String("custom"),
+					Custom: stripe.String("Pseudo"),
+				},
+				Type:     stripe.String("text"),
+				Optional: stripe.Bool(false),
+			},
+		},
 	}
 
 	if subscriptionType == entities.Subscription {

@@ -45,15 +45,19 @@ func (h *ReceiveStripePaymentHandler) Handle(c *fiber.Ctx) error {
 		paymentType = valuesobjects.Recurring
 	}
 
-	// Extract pseudo from metadata or customer name
+	// Extract pseudo from custom fields
 	pseudo := ""
-	if session.Metadata != nil {
-		if p, ok := session.Metadata["pseudo"]; ok {
-			pseudo = p
+	if len(session.CustomFields) > 0 {
+		// Look for the pseudo field in custom fields
+		for _, field := range session.CustomFields {
+			if field.Key == "Pseudo" && field.Text != nil {
+				pseudo = field.Text.Value
+				break
+			}
 		}
 	}
 
-	// If pseudo not in metadata, use customer name
+	// If pseudo not found in custom fields, use customer name as fallback
 	if pseudo == "" && session.CustomerDetails != nil {
 		pseudo = session.CustomerDetails.Name
 	}
