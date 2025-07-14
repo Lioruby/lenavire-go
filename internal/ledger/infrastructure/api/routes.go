@@ -10,6 +10,7 @@ import (
 
 func SetupRoutes(
 	app *fiber.App,
+	stripePaymentHandler *handlers.ReceiveStripePaymentHandler,
 	paymentHandler *handlers.ReceivePaymentHandler,
 	addExpenseHandler *handlers.AddExpenseHandler,
 	getLedgerHandler *handlers.GetLedgerHandler,
@@ -25,7 +26,8 @@ func SetupRoutes(
 
 	app.Get("/ledger-activity", handlers.HandleLedgerActivity(hub))
 
-	app.Post("/ledger/receive-payment", paymentHandler.ReceivePayment)
+	app.Post("/ledger/receive-payment", stripePaymentHandler.Handle)
+	app.Post("/ledger/receive-external-payment", paymentHandler.ReceivePayment)
 	app.Post("/ledger/add-expense", addExpenseHandler.AddExpense)
 	app.Get("/ledger", getLedgerHandler.GetLedger)
 	app.Get("/ledger/contributors-rank", getContributorsRankHandler.GetContributorsRank)

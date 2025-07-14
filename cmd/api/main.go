@@ -93,9 +93,12 @@ func main() {
 	createCheckoutCommandHandler := commands.NewCreateCheckoutCommandHandler(paymentGateway)
 	createCheckoutHandler := handlers.NewCreateCheckoutHandler(createCheckoutCommandHandler)
 
+	receiveStripePaymentHandler := handlers.NewReceiveStripePaymentHandler(receivePaymentCommandHandler)
+
 	/* Routes */
 	api.SetupRoutes(
 		app,
+		receiveStripePaymentHandler,
 		receivePaymentHandler,
 		addExpenseHandler,
 		getLedgerHandler,
