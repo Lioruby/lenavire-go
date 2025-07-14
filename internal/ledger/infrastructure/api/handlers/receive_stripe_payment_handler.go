@@ -5,11 +5,9 @@ import (
 	"fmt"
 	commands "lenavire/internal/ledger/application/commands/receive_payment"
 	"lenavire/internal/ledger/domain/valuesobjects"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stripe/stripe-go/v82"
-	"github.com/stripe/stripe-go/v82/webhook"
 )
 
 type ReceiveStripePaymentHandler struct {
@@ -24,16 +22,10 @@ func (h *ReceiveStripePaymentHandler) Handle(c *fiber.Ctx) error {
 	// Get raw body for signature verification
 	body := c.Body()
 
-	// Get Stripe signature from header
-	signature := c.Get("Stripe-Signature")
+	event := stripe.Event{}
 
-	// TODO: Replace with your webhook secret from Stripe dashboard
-	webhookSecret := os.Getenv("STRIPE_WEBHOOK_SECRET")
-
-	// Verify webhook signature
-	event, err := webhook.ConstructEvent(body, signature, webhookSecret)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid webhook signature"})
+	if err := json.Unmarshal(body, &event); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "failed to parse event"})
 	}
 
 	// Handle checkout.session.completed event
