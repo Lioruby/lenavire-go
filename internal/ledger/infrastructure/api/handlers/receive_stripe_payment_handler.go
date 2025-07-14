@@ -5,6 +5,7 @@ import (
 	"fmt"
 	commands "lenavire/internal/ledger/application/commands/receive_payment"
 	"lenavire/internal/ledger/domain/valuesobjects"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stripe/stripe-go/v82"
@@ -27,7 +28,7 @@ func (h *ReceiveStripePaymentHandler) Handle(c *fiber.Ctx) error {
 	signature := c.Get("Stripe-Signature")
 
 	// TODO: Replace with your webhook secret from Stripe dashboard
-	webhookSecret := "whsec_your_webhook_secret_here"
+	webhookSecret := os.Getenv("STRIPE_WEBHOOK_SECRET")
 
 	// Verify webhook signature
 	event, err := webhook.ConstructEvent(body, signature, webhookSecret)
